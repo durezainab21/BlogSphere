@@ -10,12 +10,14 @@ import CTASection from "@/components/CTA";
 import AnimatedSection from "@/components/AnimatedSection";
 
 export default function Home() {
-
   const [selectedCategory, setSelectedCategory] = useState("All");
-  return (
-    <main className="bg-[#FFF8EE] text-[#2B1B17]">
 
+  return (
+    <main className="min-h-screen bg-[#FFF8EE] text-[#2B1B17]">
+
+      {/* ============================= */}
       {/* Hero Section */}
+      {/* ============================= */}
 
       <AnimatedSection>
         <section
@@ -30,27 +32,27 @@ export default function Home() {
 
               <span
                 className="
-                inline-block
-                bg-[#F8EBDD]
-                text-[#800000]
-                px-5
-                py-2
-                rounded-full
-                text-sm
-                font-medium
-              "
+                  inline-block
+                  bg-[#F8EBDD]
+                  text-[#800000]
+                  px-5
+                  py-2
+                  rounded-full
+                  text-sm
+                  font-medium
+                "
               >
                 ✍️ A Modern Space For Writers
               </span>
 
               <h1
                 className="
-                mt-6
-                text-5xl
-                md:text-6xl
-                font-bold
-                leading-tight
-              "
+                  mt-6
+                  text-5xl
+                  md:text-6xl
+                  font-bold
+                  leading-tight
+                "
               >
                 Write. Share.
                 <br />
@@ -62,12 +64,12 @@ export default function Home() {
 
               <p
                 className="
-                mt-6
-                text-[#6B4F45]
-                text-lg
-                md:text-xl
-                leading-relaxed
-              "
+                  mt-6
+                  text-[#6B4F45]
+                  text-lg
+                  md:text-xl
+                  leading-relaxed
+                "
               >
                 A modern blogging platform where creators share ideas,
                 stories, and knowledge with the world.
@@ -75,25 +77,34 @@ export default function Home() {
 
               {/* Buttons */}
 
-              <div className="flex gap-4 mt-8 justify-center md:justify-start">
+              <div
+                className="
+                  flex
+                  gap-4
+                  mt-8
+                  justify-center
+                  md:justify-start
+                  flex-wrap
+                "
+              >
 
                 <Link
                   href="/create-blog"
                   className="
-                  inline-block
-                  bg-gradient-to-r
-                  from-[#800000]
-                  to-[#A52A2A]
-                  text-white
-                  px-8
-                  py-4
-                  rounded-full
-                  font-medium
-                  hover:opacity-90
-                  hover:shadow-xl
-                  transition-all
-                  duration-300
-                "
+                    inline-block
+                    bg-gradient-to-r
+                    from-[#800000]
+                    to-[#A52A2A]
+                    text-white
+                    px-8
+                    py-4
+                    rounded-full
+                    font-medium
+                    hover:opacity-90
+                    hover:shadow-xl
+                    transition-all
+                    duration-300
+                  "
                 >
                   Start Writing
                 </Link>
@@ -101,19 +112,19 @@ export default function Home() {
                 <Link
                   href="#blogs"
                   className="
-                  inline-block
-                  border
-                  border-[#800000]
-                  text-[#800000]
-                  px-8
-                  py-4
-                  rounded-full
-                  font-medium
-                  hover:bg-[#800000]
-                  hover:text-white
-                  transition-all
-                  duration-300
-                "
+                    inline-block
+                    border
+                    border-[#800000]
+                    text-[#800000]
+                    px-8
+                    py-4
+                    rounded-full
+                    font-medium
+                    hover:bg-[#800000]
+                    hover:text-white
+                    transition-all
+                    duration-300
+                  "
                 >
                   Explore Blogs
                 </Link>
@@ -122,12 +133,21 @@ export default function Home() {
 
               {/* Stats */}
 
-              <div className="flex gap-8 mt-10 justify-center md:justify-start">
+              <div
+                className="
+                  flex
+                  gap-8
+                  mt-10
+                  justify-center
+                  md:justify-start
+                "
+              >
 
                 <div>
                   <h3 className="text-2xl font-bold text-[#800000]">
                     500+
                   </h3>
+
                   <p className="text-sm text-[#6B4F45]">
                     Stories
                   </p>
@@ -137,6 +157,7 @@ export default function Home() {
                   <h3 className="text-2xl font-bold text-[#800000]">
                     100+
                   </h3>
+
                   <p className="text-sm text-[#6B4F45]">
                     Creators
                   </p>
@@ -146,6 +167,7 @@ export default function Home() {
                   <h3 className="text-2xl font-bold text-[#800000]">
                     20+
                   </h3>
+
                   <p className="text-sm text-[#6B4F45]">
                     Topics
                   </p>
@@ -161,32 +183,32 @@ export default function Home() {
 
               <div
                 className="
-                relative
-                bg-[#FFFDF8]
-                border
-                border-[#E8DCC8]
-                rounded-3xl
-                p-6
-                shadow-2xl
-                hover:-translate-y-2
-                transition
-                duration-300
-                max-w-md
-              "
+                  relative
+                  bg-[#FFFDF8]
+                  border
+                  border-[#E8DCC8]
+                  rounded-3xl
+                  p-6
+                  shadow-2xl
+                  hover:-translate-y-2
+                  transition
+                  duration-300
+                  max-w-md
+                "
               >
 
                 <span
                   className="
-                  absolute
-                  top-5
-                  right-5
-                  bg-[#800000]
-                  text-white
-                  px-4
-                  py-2
-                  rounded-full
-                  text-xs
-                "
+                    absolute
+                    top-5
+                    right-5
+                    bg-[#800000]
+                    text-white
+                    px-4
+                    py-2
+                    rounded-full
+                    text-xs
+                  "
                 >
                   Featured Story
                 </span>
@@ -199,11 +221,11 @@ export default function Home() {
 
                 <h3
                   className="
-                  mt-5
-                  text-xl
-                  font-bold
-                  text-[#2B1B17]
-                "
+                    mt-5
+                    text-xl
+                    font-bold
+                    text-[#2B1B17]
+                  "
                 >
                   Latest Inspiration
                 </h3>
@@ -220,29 +242,43 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
- {/* Categories */}
 
-<AnimatedSection>
-  <section id="categories">
-    <Categories
-      selectedCategory={selectedCategory}
-      setSelectedCategory={setSelectedCategory}
-    />
-  </section>
-</AnimatedSection>
-    
+      {/* ============================= */}
+      {/* Categories Section */}
+      {/* ============================= */}
 
+      <AnimatedSection>
+        <section
+          id="categories"
+          className="max-w-7xl mx-auto px-6 py-12"
+        >
+          <Categories
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+          />
+        </section>
+      </AnimatedSection>
+
+
+      {/* ============================= */}
       {/* Featured Blogs */}
+      {/* ============================= */}
 
-<AnimatedSection>
-  <section id="blogs">
-    <FeaturedBlogs
-      selectedCategory={selectedCategory}
-    />
-  </section>
-</AnimatedSection>
+      <AnimatedSection>
+        <section
+          id="blogs"
+          className="max-w-7xl mx-auto px-6 py-16"
+        >
+          <FeaturedBlogs
+            selectedCategory={selectedCategory}
+          />
+        </section>
+      </AnimatedSection>
 
-      {/* Why Section */}
+
+      {/* ============================= */}
+      {/* Why BlogSphere */}
+      {/* ============================= */}
 
       <AnimatedSection>
         <section id="about">
@@ -250,7 +286,10 @@ export default function Home() {
         </section>
       </AnimatedSection>
 
-      {/* CTA */}
+
+      {/* ============================= */}
+      {/* Call To Action */}
+      {/* ============================= */}
 
       <AnimatedSection>
         <CTASection />

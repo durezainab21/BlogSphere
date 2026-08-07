@@ -138,23 +138,7 @@ export default function Navbar() {
 
 
 
-  <Link
-    href="/create-blog"
-    className="
-    px-7
-    py-3
-    rounded-full
-    border
-    border-[#800000]
-    text-[#800000]
-    font-semibold
-    hover:bg-[#800000]
-    hover:text-white
-    transition
-    "
-  >
-    Start Writing
-  </Link>
+
 
 
 
