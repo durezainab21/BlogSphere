@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -13,7 +14,7 @@ export default function BlogDetails() {
   const [error, setError] = useState("");
 
   // ==========================================
-  // Get Blog From Backend
+  // Get Single Blog From MongoDB
   // ==========================================
 
   useEffect(() => {
@@ -25,30 +26,18 @@ export default function BlogDetails() {
         setError("");
 
         const response = await fetch(
-          "http://localhost:5000/api/blogs"
+          `http://localhost:5000/api/blogs/${id}`
         );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch blogs");
-        }
 
         const data = await response.json();
 
-        const blogs = data.blogs || [];
-
-        const currentBlog = blogs.find(
-          (item) => String(item.id) === String(id)
-        );
-
-        if (!currentBlog) {
-          setBlog(null);
-          setError(
-            "This blog does not exist or has been deleted."
+        if (!response.ok) {
+          throw new Error(
+            data.message || "Failed to fetch blog"
           );
-          return;
         }
 
-        setBlog(currentBlog);
+        setBlog(data.blog);
 
       } catch (error) {
         console.error("Error loading blog:", error);
@@ -56,7 +45,7 @@ export default function BlogDetails() {
         setBlog(null);
 
         setError(
-          "Unable to connect to the BlogSphere server."
+          "Unable to load this blog. Please make sure the backend is running."
         );
 
       } finally {
@@ -66,7 +55,6 @@ export default function BlogDetails() {
 
     fetchBlog();
   }, [id]);
-
 
   // ==========================================
   // Delete Blog
@@ -111,53 +99,27 @@ export default function BlogDetails() {
     }
   };
 
-
   // ==========================================
   // Loading
   // ==========================================
 
   if (loading) {
     return (
-      <main
-        className="
-          min-h-screen
-          bg-[#FFF8EE]
-          flex
-          items-center
-          justify-center
-        "
-      >
-        <p
-          className="
-            text-[#6B4F45]
-            text-lg
-            font-semibold
-          "
-        >
+      <main className="min-h-screen bg-[#FFF8EE] flex items-center justify-center">
+        <p className="text-lg text-[#6B4F45]">
           Loading blog...
         </p>
       </main>
     );
   }
 
-
   // ==========================================
-  // Blog Not Found / Server Error
+  // Blog Not Found
   // ==========================================
 
   if (!blog) {
     return (
-      <main
-        className="
-          min-h-screen
-          bg-[#FFF8EE]
-          flex
-          items-center
-          justify-center
-          px-6
-        "
-      >
-
+      <main className="min-h-screen bg-[#FFF8EE] flex items-center justify-center px-6">
         <div className="text-center">
 
           <h1
@@ -198,11 +160,9 @@ export default function BlogDetails() {
           </Link>
 
         </div>
-
       </main>
     );
   }
-
 
   // ==========================================
   // Reading Time
@@ -217,20 +177,20 @@ export default function BlogDetails() {
     )
   );
 
+  // ==========================================
+  // Format MongoDB Date
+  // ==========================================
+
+  const formattedDate = blog.createdAt
+    ? new Date(blog.createdAt).toLocaleDateString()
+    : "Today";
 
   // ==========================================
   // Blog Details
   // ==========================================
 
   return (
-    <main
-      className="
-        min-h-screen
-        bg-[#FFF8EE]
-        px-6
-        py-12
-      "
-    >
+    <main className="min-h-screen bg-[#FFF8EE] px-6 py-16">
 
       <article
         className="
@@ -264,7 +224,6 @@ export default function BlogDetails() {
           </div>
         )}
 
-
         <div className="p-8">
 
           {/* ================================= */}
@@ -286,7 +245,6 @@ export default function BlogDetails() {
             {blog.category || "General"}
           </span>
 
-
           {/* ================================= */}
           {/* Title */}
           {/* ================================= */}
@@ -303,7 +261,6 @@ export default function BlogDetails() {
           >
             {blog.title}
           </h1>
-
 
           {/* ================================= */}
           {/* Author */}
@@ -337,7 +294,6 @@ export default function BlogDetails() {
                 : "B"}
             </div>
 
-
             <div>
 
               <h3
@@ -349,20 +305,18 @@ export default function BlogDetails() {
                 {blog.author || "BlogSphere Writer"}
               </h3>
 
-
               <p
                 className="
                   text-sm
                   text-[#6B4F45]
                 "
               >
-                {blog.date || "Today"} • {readingTime} min read
+                {formattedDate} • {readingTime} min read
               </p>
 
             </div>
 
           </div>
-
 
           {/* ================================= */}
           {/* Blog Content */}
@@ -380,7 +334,6 @@ export default function BlogDetails() {
             {blog.content}
           </div>
 
-
           {/* ================================= */}
           {/* Actions */}
           {/* ================================= */}
@@ -394,10 +347,7 @@ export default function BlogDetails() {
             "
           >
 
-            {/* ================================= */}
-            {/* Back to Dashboard */}
-            {/* ================================= */}
-
+            {/* Back */}
             <Link
               href="/dashboard"
               className="
@@ -416,13 +366,9 @@ export default function BlogDetails() {
               ← Back to Dashboard
             </Link>
 
-
-            {/* ================================= */}
             {/* Edit */}
-            {/* ================================= */}
-
             <Link
-              href={`/blog/edit/${blog.id}`}
+              href={`/blog/edit/${blog._id}`}
               className="
                 bg-gradient-to-r
                 from-[#800000]
@@ -439,11 +385,7 @@ export default function BlogDetails() {
               Edit ✍️
             </Link>
 
-
-            {/* ================================= */}
             {/* Delete */}
-            {/* ================================= */}
-
             <button
               onClick={deleteBlog}
               className="
@@ -469,3 +411,4 @@ export default function BlogDetails() {
     </main>
   );
 }
+

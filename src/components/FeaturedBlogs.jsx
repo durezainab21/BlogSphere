@@ -1,7 +1,7 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
-
 import BlogCard from "@/components/BlogCard";
 
 export default function FeaturedBlogs({ selectedCategory }) {
@@ -9,7 +9,7 @@ export default function FeaturedBlogs({ selectedCategory }) {
   const [search, setSearch] = useState("");
 
   // ================================
-  // Fetch Blogs
+  // Fetch Blogs From MongoDB
   // ================================
 
   useEffect(() => {
@@ -40,26 +40,14 @@ export default function FeaturedBlogs({ selectedCategory }) {
   });
 
   return (
-    <section
-      className="
-        bg-[#FFF8EE]
-        py-20
-      "
-    >
-      <div
-        className="
-          max-w-7xl
-          mx-auto
-          px-6
-        "
-      >
+    <section>
+      <div className="max-w-7xl mx-auto px-6 py-16">
 
         {/* ================================ */}
         {/* Heading */}
         {/* ================================ */}
 
         <div className="text-center">
-
           <h2
             className="
               text-4xl
@@ -78,9 +66,7 @@ export default function FeaturedBlogs({ selectedCategory }) {
           >
             Discover stories from BlogSphere creators
           </p>
-
         </div>
-
 
         {/* ================================ */}
         {/* Search */}
@@ -93,7 +79,6 @@ export default function FeaturedBlogs({ selectedCategory }) {
             justify-center
           "
         >
-
           <input
             type="text"
             placeholder="Search blogs..."
@@ -113,16 +98,13 @@ export default function FeaturedBlogs({ selectedCategory }) {
               transition
             "
           />
-
         </div>
-
 
         {/* ================================ */}
         {/* Selected Category */}
         {/* ================================ */}
 
         <div className="mt-6 text-center">
-
           <span
             className="
               inline-block
@@ -140,11 +122,8 @@ export default function FeaturedBlogs({ selectedCategory }) {
             <span className="ml-2 font-bold">
               {selectedCategory}
             </span>
-
           </span>
-
         </div>
-
 
         {/* ================================ */}
         {/* Blogs */}
@@ -158,9 +137,7 @@ export default function FeaturedBlogs({ selectedCategory }) {
             mt-12
           "
         >
-
           {filteredBlogs.length === 0 ? (
-
             <div
               className="
                 md:col-span-3
@@ -172,34 +149,26 @@ export default function FeaturedBlogs({ selectedCategory }) {
                 text-center
               "
             >
-
               <p className="text-[#6B4F45]">
                 No blogs found in this category.
               </p>
-
             </div>
-
           ) : (
-
             filteredBlogs.map((blog) => (
-
               <BlogCard
-                key={blog.id}
-                id={blog.id}
+                key={blog._id}
+                id={blog._id}
                 title={blog.title}
                 description={blog.content}
                 author={blog.author}
-                time={blog.time}
-                date={blog.date}
+                date={blog.createdAt}
               />
-
             ))
-
           )}
-
         </div>
 
       </div>
     </section>
   );
 }
+

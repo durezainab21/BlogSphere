@@ -1,49 +1,115 @@
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+
 // ===============================
 // Register User
 // ===============================
-const registerUser = (req, res) => {
-  const { name, email, password } = req.body;
+const registerUser = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
-  // Validation
-  if (!name || !email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Please fill in all fields.",
-    });
-  }
+    // Validation
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill in all fields.",
+      });
+    }
 
-  res.status(201).json({
-    success: true,
-    message: "User Registered Successfully 🚀",
-    user: {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User with this email already exists.",
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    const user = await User.create({
       name,
       email,
-      password,
-    },
-  });
+      password: hashedPassword,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "User Registered Successfully 🚀",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Register Error:", error.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error while registering user.",
+    });
+  }
 };
 
 // ===============================
 // Login User
 // ===============================
-const loginUser = (req, res) => {
-  const { email, password } = req.body;
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  // Validation
-  if (!email || !password) {
-    return res.status(400).json({
+    // Validation
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and Password are required.",
+      });
+    }
+
+    // Find user
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password.",
+      });
+    }
+
+    // Compare password
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User Logged In Successfully 🚀",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Login Error:", error.message);
+
+    res.status(500).json({
       success: false,
-      message: "Email and Password are required.",
+      message: "Server error while logging in.",
     });
   }
-
-  res.status(200).json({
-    success: true,
-    message: "User Logged In Successfully 🚀",
-    user: {
-      email,
-    },
-  });
 };
 
 module.exports = {

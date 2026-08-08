@@ -1,31 +1,23 @@
-// ==========================================
-// Temporary Blog Storage
-// ==========================================
-
-let blogs = [
-  {
-    id: 1,
-    title: "Welcome to BlogSphere",
-    category: "Technology",
-    content: "This is my first blog post 🚀",
-    status: "published",
-    createdAt: new Date(),
-  },
-];
-
+const Blog = require("../models/Blog");
 
 // ==========================================
 // Create Blog
 // ==========================================
 
-const createBlog = (req, res) => {
+const createBlog = async (req, res) => {
   try {
+    console.log("🔥 CREATE BLOG CALLED");
+    console.log("Method:", req.method);
+    console.log("URL:", req.originalUrl);
+    console.log("Body:", req.body);
+
     const {
       title,
       category,
       content,
       status,
-    } = req.body;
+      author,
+    } = req.body || {};
 
     // Validation
     if (!title || !content) {
@@ -35,18 +27,14 @@ const createBlog = (req, res) => {
       });
     }
 
-    // Create new blog
-    const newBlog = {
-      id: Date.now(),
+    // Create blog in MongoDB
+    const newBlog = await Blog.create({
       title,
       category: category || "General",
       content,
       status: status || "published",
-      createdAt: new Date(),
-    };
-
-    // Save blog
-    blogs.push(newBlog);
+      author: author || "Anonymous",
+    });
 
     res.status(201).json({
       success: true,
@@ -60,6 +48,7 @@ const createBlog = (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server Error",
+      error: error.message,
     });
   }
 };
@@ -69,9 +58,17 @@ const createBlog = (req, res) => {
 // Get All Blogs
 // ==========================================
 
-const getBlogs = (req, res) => {
+const getBlogs = async (req, res) => {
   try {
-    res.json({
+    console.log("📚 GET BLOGS CALLED");
+    console.log("Method:", req.method);
+    console.log("URL:", req.originalUrl);
+
+    const blogs = await Blog.find().sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json({
       success: true,
       blogs: blogs,
     });
@@ -82,6 +79,7 @@ const getBlogs = (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server Error",
+      error: error.message,
     });
   }
 };
@@ -91,13 +89,14 @@ const getBlogs = (req, res) => {
 // Get Single Blog
 // ==========================================
 
-const getBlogById = (req, res) => {
+const getBlogById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const blog = blogs.find(
-      (item) => String(item.id) === String(id)
-    );
+    console.log("📖 GET SINGLE BLOG");
+    console.log("Blog ID:", id);
+
+    const blog = await Blog.findById(id);
 
     if (!blog) {
       return res.status(404).json({
@@ -106,7 +105,7 @@ const getBlogById = (req, res) => {
       });
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       blog: blog,
     });
@@ -117,6 +116,7 @@ const getBlogById = (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server Error",
+      error: error.message,
     });
   }
 };
@@ -126,28 +126,23 @@ const getBlogById = (req, res) => {
 // Delete Blog
 // ==========================================
 
-const deleteBlog = (req, res) => {
+const deleteBlog = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Check if blog exists
-    const blogExists = blogs.some(
-      (item) => String(item.id) === String(id)
-    );
+    console.log("🗑️ DELETE BLOG");
+    console.log("Blog ID:", id);
 
-    if (!blogExists) {
+    const deletedBlog = await Blog.findByIdAndDelete(id);
+
+    if (!deletedBlog) {
       return res.status(404).json({
         success: false,
         message: "Blog not found",
       });
     }
 
-    // Remove blog
-    blogs = blogs.filter(
-      (item) => String(item.id) !== String(id)
-    );
-
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Blog deleted successfully",
     });
@@ -158,6 +153,7 @@ const deleteBlog = (req, res) => {
     res.status(500).json({
       success: false,
       message: "Server Error",
+      error: error.message,
     });
   }
 };
@@ -173,3 +169,4 @@ module.exports = {
   getBlogById,
   deleteBlog,
 };
+

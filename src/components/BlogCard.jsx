@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 
 export default function BlogCard({
@@ -5,7 +6,6 @@ export default function BlogCard({
   title,
   description,
   author,
-  time,
   date,
 }) {
   return (
@@ -17,13 +17,10 @@ export default function BlogCard({
         border-[#E8DCC8]
         rounded-3xl
         p-6
-        hover:shadow-2xl
-        hover:-translate-y-2
-        transition-all
-        duration-300
+        hover:shadow-lg
+        transition
       "
     >
-
       {/* Blog Title */}
       <h3
         className="
@@ -60,7 +57,6 @@ export default function BlogCard({
           mt-6
         "
       >
-
         {/* Author */}
         <div
           className="
@@ -69,7 +65,6 @@ export default function BlogCard({
             gap-3
           "
         >
-
           {/* Author Avatar */}
           <div
             className="
@@ -92,7 +87,6 @@ export default function BlogCard({
 
           {/* Author Information */}
           <div>
-
             <p
               className="
                 text-sm
@@ -109,11 +103,11 @@ export default function BlogCard({
                 text-[#8A6A5A]
               "
             >
-              {date || "Today"} • {time || "Just now"}
+              {date
+                ? new Date(date).toLocaleDateString()
+                : "Today"}
             </p>
-
           </div>
-
         </div>
 
         {/* Read More */}
@@ -130,9 +124,8 @@ export default function BlogCard({
         >
           Read →
         </Link>
-
       </div>
-
     </article>
   );
 }
+
