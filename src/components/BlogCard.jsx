@@ -1,41 +1,66 @@
-
 import Link from "next/link";
 
 export default function BlogCard({
   id,
   title,
   description,
+  category,
   author,
   date,
 }) {
   return (
     <article
       className="
-        group
         bg-[#FFFDF8]
         border
         border-[#E8DCC8]
         rounded-3xl
         p-6
-        hover:shadow-lg
         transition
+        duration-300
+        hover:shadow-lg
       "
     >
+      {/* ================================ */}
+      {/* Category */}
+      {/* ================================ */}
+
+      <div className="mb-4">
+        <span
+          className="
+            inline-block
+            bg-[#F8EBDD]
+            text-[#800000]
+            px-3
+            py-1
+            rounded-full
+            text-xs
+            font-semibold
+          "
+        >
+          {category || "General"}
+        </span>
+      </div>
+
+      {/* ================================ */}
       {/* Blog Title */}
+      {/* ================================ */}
+
       <h3
         className="
           text-xl
           font-bold
           text-[#2B1B17]
           leading-snug
-          group-hover:text-[#800000]
-          transition
         "
       >
         {title}
       </h3>
 
+      {/* ================================ */}
       {/* Blog Description */}
+      {/* ================================ */}
+
       <p
         className="
           mt-3
@@ -48,7 +73,10 @@ export default function BlogCard({
         {description}
       </p>
 
+      {/* ================================ */}
       {/* Bottom Section */}
+      {/* ================================ */}
+
       <div
         className="
           flex
@@ -57,7 +85,10 @@ export default function BlogCard({
           mt-6
         "
       >
+        {/* ================================ */}
         {/* Author */}
+        {/* ================================ */}
+
         <div
           className="
             flex
@@ -66,6 +97,7 @@ export default function BlogCard({
           "
         >
           {/* Author Avatar */}
+
           <div
             className="
               w-10
@@ -86,6 +118,7 @@ export default function BlogCard({
           </div>
 
           {/* Author Information */}
+
           <div>
             <p
               className="
@@ -110,7 +143,10 @@ export default function BlogCard({
           </div>
         </div>
 
+        {/* ================================ */}
         {/* Read More */}
+        {/* ================================ */}
+
         <Link
           href={`/blog/${id}`}
           className="
@@ -128,4 +164,3 @@ export default function BlogCard({
     </article>
   );
 }
-

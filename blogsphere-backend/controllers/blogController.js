@@ -41,7 +41,6 @@ const createBlog = async (req, res) => {
       message: "Blog created successfully",
       blog: newBlog,
     });
-
   } catch (error) {
     console.log("Create Blog Error:", error);
 
@@ -52,7 +51,6 @@ const createBlog = async (req, res) => {
     });
   }
 };
-
 
 // ==========================================
 // Get All Blogs
@@ -72,7 +70,6 @@ const getBlogs = async (req, res) => {
       success: true,
       blogs: blogs,
     });
-
   } catch (error) {
     console.log("Get Blogs Error:", error);
 
@@ -83,7 +80,6 @@ const getBlogs = async (req, res) => {
     });
   }
 };
-
 
 // ==========================================
 // Get Single Blog
@@ -109,7 +105,6 @@ const getBlogById = async (req, res) => {
       success: true,
       blog: blog,
     });
-
   } catch (error) {
     console.log("Get Single Blog Error:", error);
 
@@ -121,6 +116,73 @@ const getBlogById = async (req, res) => {
   }
 };
 
+// ==========================================
+// Update Blog
+// ==========================================
+
+const updateBlog = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log("✏️ UPDATE BLOG");
+    console.log("Blog ID:", id);
+    console.log("Updated Data:", req.body);
+
+    const {
+      title,
+      category,
+      content,
+      status,
+      author,
+    } = req.body || {};
+
+    // Validation
+    if (!title || !content) {
+      return res.status(400).json({
+        success: false,
+        message: "Title and Content are required.",
+      });
+    }
+
+    // Update blog in MongoDB
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      id,
+      {
+        title,
+        category: category || "General",
+        content,
+        status: status || "published",
+        author: author || "Anonymous",
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    // Blog not found
+    if (!updatedBlog) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Blog updated successfully",
+      blog: updatedBlog,
+    });
+  } catch (error) {
+    console.log("Update Blog Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
 
 // ==========================================
 // Delete Blog
@@ -146,7 +208,6 @@ const deleteBlog = async (req, res) => {
       success: true,
       message: "Blog deleted successfully",
     });
-
   } catch (error) {
     console.log("Delete Blog Error:", error);
 
@@ -158,7 +219,6 @@ const deleteBlog = async (req, res) => {
   }
 };
 
-
 // ==========================================
 // Export Controllers
 // ==========================================
@@ -167,6 +227,6 @@ module.exports = {
   createBlog,
   getBlogs,
   getBlogById,
+  updateBlog,
   deleteBlog,
 };
-

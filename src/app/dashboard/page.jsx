@@ -28,7 +28,12 @@ export default function Dashboard() {
 
         const data = await response.json();
 
-        setBlogs(data.blogs || []);
+        if (data.success) {
+          setBlogs(data.blogs || []);
+        } else {
+          setBlogs([]);
+          setError(data.message || "Failed to fetch blogs");
+        }
       } catch (error) {
         console.error("Dashboard Error:", error);
 
@@ -323,7 +328,7 @@ export default function Dashboard() {
               blogs.map((blog) => (
 
                 <div
-                  key={blog.id}
+                  key={blog._id}
                   className="
                     bg-[#FFFDF8]
                     border
@@ -354,8 +359,10 @@ export default function Dashboard() {
 
                     <div className="min-w-0">
 
+                      {/* Blog Title */}
+
                       <Link
-                        href={`/blog/${blog.id}`}
+                        href={`/blog/${blog._id}`}
                         className="
                           block
                           font-semibold
@@ -367,6 +374,8 @@ export default function Dashboard() {
                       >
                         {blog.title}
                       </Link>
+
+                      {/* Category + Date */}
 
                       <p
                         className="
@@ -432,7 +441,7 @@ export default function Dashboard() {
                       {/* View */}
 
                       <Link
-                        href={`/blog/${blog.id}`}
+                        href={`/blog/${blog._id}`}
                         className="
                           text-[#800000]
                           font-semibold

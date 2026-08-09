@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -38,7 +37,6 @@ export default function BlogDetails() {
         }
 
         setBlog(data.blog);
-
       } catch (error) {
         console.error("Error loading blog:", error);
 
@@ -47,7 +45,6 @@ export default function BlogDetails() {
         setError(
           "Unable to load this blog. Please make sure the backend is running."
         );
-
       } finally {
         setLoading(false);
       }
@@ -89,7 +86,6 @@ export default function BlogDetails() {
       alert("Blog deleted successfully 🗑️");
 
       router.push("/dashboard");
-
     } catch (error) {
       console.error("Delete error:", error);
 
@@ -105,8 +101,16 @@ export default function BlogDetails() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#FFF8EE] flex items-center justify-center">
-        <p className="text-lg text-[#6B4F45]">
+      <main
+        className="
+          min-h-screen
+          bg-[#FFF8EE]
+          flex
+          items-center
+          justify-center
+        "
+      >
+        <p className="text-[#6B4F45] text-lg">
           Loading blog...
         </p>
       </main>
@@ -119,8 +123,15 @@ export default function BlogDetails() {
 
   if (!blog) {
     return (
-      <main className="min-h-screen bg-[#FFF8EE] flex items-center justify-center px-6">
-        <div className="text-center">
+      <main
+        className="
+          min-h-screen
+          bg-[#FFF8EE]
+          px-6
+          py-20
+        "
+      >
+        <div className="max-w-4xl mx-auto text-center">
 
           <h1
             className="
@@ -173,7 +184,7 @@ export default function BlogDetails() {
   const readingTime = Math.max(
     1,
     Math.ceil(
-      content.split(/\s+/).length / 200
+      content.split(/\s+/).filter(Boolean).length / 200
     )
   );
 
@@ -190,8 +201,14 @@ export default function BlogDetails() {
   // ==========================================
 
   return (
-    <main className="min-h-screen bg-[#FFF8EE] px-6 py-16">
-
+    <main
+      className="
+        min-h-screen
+        bg-[#FFF8EE]
+        px-6
+        py-12
+      "
+    >
       <article
         className="
           max-w-4xl
@@ -348,6 +365,7 @@ export default function BlogDetails() {
           >
 
             {/* Back */}
+
             <Link
               href="/dashboard"
               className="
@@ -367,6 +385,7 @@ export default function BlogDetails() {
             </Link>
 
             {/* Edit */}
+
             <Link
               href={`/blog/edit/${blog._id}`}
               className="
@@ -386,6 +405,7 @@ export default function BlogDetails() {
             </Link>
 
             {/* Delete */}
+
             <button
               onClick={deleteBlog}
               className="
@@ -405,10 +425,7 @@ export default function BlogDetails() {
           </div>
 
         </div>
-
       </article>
-
     </main>
   );
 }
-

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,20 +6,36 @@ import BlogCard from "@/components/BlogCard";
 export default function FeaturedBlogs({ selectedCategory }) {
   const [blogs, setBlogs] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // ================================
   // Fetch Blogs From MongoDB
   // ================================
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/blogs")
-      .then((res) => res.json())
-      .then((data) => {
-        setBlogs(data.blogs || []);
-      })
-      .catch((error) => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/blogs"
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+          setBlogs(data.blogs || []);
+        } else {
+          console.log("Failed to fetch blogs:", data.message);
+          setBlogs([]);
+        }
+      } catch (error) {
         console.log("Error fetching blogs:", error);
-      });
+        setBlogs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogs();
   }, []);
 
   // ================================
@@ -40,8 +55,8 @@ export default function FeaturedBlogs({ selectedCategory }) {
   });
 
   return (
-    <section>
-      <div className="max-w-7xl mx-auto px-6 py-16">
+    <section className="py-16">
+      <div className="max-w-7xl mx-auto px-6">
 
         {/* ================================ */}
         {/* Heading */}
@@ -126,49 +141,62 @@ export default function FeaturedBlogs({ selectedCategory }) {
         </div>
 
         {/* ================================ */}
-        {/* Blogs */}
+        {/* Loading State */}
         {/* ================================ */}
 
-        <div
-          className="
-            grid
-            md:grid-cols-3
-            gap-8
-            mt-12
-          "
-        >
-          {filteredBlogs.length === 0 ? (
+        {loading ? (
+          <div className="mt-12 text-center">
+            <p className="text-[#6B4F45]">
+              Loading blogs...
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* ================================ */}
+            {/* Blogs */}
+            {/* ================================ */}
+
             <div
               className="
-                md:col-span-3
-                bg-[#FFFDF8]
-                border
-                border-[#E8DCC8]
-                rounded-3xl
-                p-8
-                text-center
+                grid
+                md:grid-cols-3
+                gap-8
+                mt-12
               "
             >
-              <p className="text-[#6B4F45]">
-                No blogs found in this category.
-              </p>
+              {filteredBlogs.length === 0 ? (
+                <div
+                  className="
+                    md:col-span-3
+                    bg-[#FFFDF8]
+                    border
+                    border-[#E8DCC8]
+                    rounded-3xl
+                    p-8
+                    text-center
+                  "
+                >
+                  <p className="text-[#6B4F45]">
+                    No blogs found in this category.
+                  </p>
+                </div>
+              ) : (
+                filteredBlogs.map((blog) => (
+                  <BlogCard
+                    key={blog._id}
+                    id={blog._id}
+                    title={blog.title}
+                    description={blog.content}
+                    category={blog.category}
+                    author={blog.author}
+                    date={blog.createdAt}
+                  />
+                ))
+              )}
             </div>
-          ) : (
-            filteredBlogs.map((blog) => (
-              <BlogCard
-                key={blog._id}
-                id={blog._id}
-                title={blog.title}
-                description={blog.content}
-                author={blog.author}
-                date={blog.createdAt}
-              />
-            ))
-          )}
-        </div>
-
+          </>
+        )}
       </div>
     </section>
   );
 }
-
