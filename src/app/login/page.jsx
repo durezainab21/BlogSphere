@@ -1,12 +1,11 @@
+
 "use client";
 
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-
 export default function Login() {
-
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -14,30 +13,24 @@ export default function Login() {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-
   const [loading, setLoading] = useState(false);
 
-
-
   const handleLogin = async (e) => {
-
     e.preventDefault();
 
     setMessage("");
     setError("");
 
-
+    // Validation
     if (!email || !password) {
       setError("Please fill all fields");
       return;
     }
 
-
     try {
-
       setLoading(true);
 
-
+      // Login API
       const response = await fetch(
         "http://localhost:5000/api/auth/login",
         {
@@ -54,69 +47,49 @@ export default function Login() {
         }
       );
 
-
       const data = await response.json();
 
-
-
+      // Handle API error
       if (!response.ok) {
-
         setError(data.message || "Login failed");
-
         return;
       }
 
-
-
-      setMessage("Login successful 🎉");
-
-
-      // Save user data if backend returns it
-      if(data.token){
+      // ===============================
+      // Save JWT Token
+      // ===============================
+      if (data.token) {
         localStorage.setItem("token", data.token);
       }
 
-
-      if(data.user){
+      // ===============================
+      // Save User Information
+      // ===============================
+      if (data.user) {
         localStorage.setItem(
           "user",
           JSON.stringify(data.user)
         );
       }
 
+      setMessage("Login successful 🎉");
 
-
+      // Redirect to Dashboard
       setTimeout(() => {
-
-        router.push("/");
-
-      },1000);
-
-
-
-    } 
-
-    catch (error) {
+        router.push("/dashboard");
+      }, 800);
+    } catch (error) {
+      console.error("Login Error:", error);
 
       setError(
-        "Server error. Please try again."
+        "Unable to connect to server. Please try again."
       );
-
-    }
-
-    finally{
-
+    } finally {
       setLoading(false);
-
     }
-
   };
 
-
-
-
   return (
-
     <main
       className="
       min-h-screen
@@ -127,8 +100,6 @@ export default function Login() {
       px-6
       "
     >
-
-
       <div
         className="
         w-full
@@ -141,8 +112,7 @@ export default function Login() {
         shadow-2xl
         "
       >
-
-
+        {/* Logo */}
         <h1
           className="
           text-center
@@ -157,9 +127,7 @@ export default function Login() {
           </span>
         </h1>
 
-
-
-
+        {/* Icon */}
         <div
           className="
           mx-auto
@@ -177,9 +145,7 @@ export default function Login() {
           ✍️
         </div>
 
-
-
-
+        {/* Heading */}
         <h2
           className="
           mt-5
@@ -192,8 +158,6 @@ export default function Login() {
           Welcome Back
         </h2>
 
-
-
         <p
           className="
           mt-3
@@ -204,29 +168,17 @@ export default function Login() {
           Continue your writing journey
         </p>
 
-
-
-
+        {/* Login Form */}
         <form
           onSubmit={handleLogin}
-          className="
-          mt-8
-          space-y-5
-          "
+          className="mt-8 space-y-5"
         >
-
-
-
+          {/* Email */}
           <input
-
             type="email"
-
             value={email}
-
-            onChange={(e)=>setEmail(e.target.value)}
-
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Email address"
-
             className="
             w-full
             px-5
@@ -240,23 +192,14 @@ export default function Login() {
             focus:border-[#800000]
             transition
             "
-
           />
 
-
-
-
-
+          {/* Password */}
           <input
-
             type="password"
-
             value={password}
-
-            onChange={(e)=>setPassword(e.target.value)}
-
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-
             className="
             w-full
             px-5
@@ -270,37 +213,24 @@ export default function Login() {
             focus:border-[#800000]
             transition
             "
-
           />
 
-
-
-
-          {
-            error &&
-
+          {/* Error */}
+          {error && (
             <p className="text-red-600 text-center text-sm">
               {error}
             </p>
+          )}
 
-          }
-
-
-
-          {
-            message &&
-
+          {/* Success */}
+          {message && (
             <p className="text-green-600 text-center text-sm">
               {message}
             </p>
+          )}
 
-          }
-
-
-
-
+          {/* Forgot Password */}
           <div className="text-right">
-
             <p
               className="
               text-sm
@@ -311,18 +241,12 @@ export default function Login() {
             >
               Forgot password?
             </p>
-
           </div>
 
-
-
-
-
-
+          {/* Login Button */}
           <button
-
+            type="submit"
             disabled={loading}
-
             className="
             w-full
             bg-gradient-to-r
@@ -336,29 +260,15 @@ export default function Login() {
             hover:shadow-xl
             hover:-translate-y-1
             transition-all
+            disabled:opacity-60
+            disabled:cursor-not-allowed
             "
-
           >
-
-            {
-              loading 
-              ? "Logging in..."
-              : "Login"
-            }
-
+            {loading ? "Logging in..." : "Login"}
           </button>
-
-
-
-
-
         </form>
 
-
-
-
-
-
+        {/* Register Link */}
         <p
           className="
           text-center
@@ -367,14 +277,10 @@ export default function Login() {
           text-[#6B4F45]
           "
         >
-
           Don't have an account?
 
-
           <Link
-
             href="/register"
-
             className="
             ml-1
             text-[#800000]
@@ -382,25 +288,12 @@ export default function Login() {
             cursor-pointer
             hover:underline
             "
-
           >
-
             Register
-
           </Link>
-
-
         </p>
-
-
-
-
       </div>
-
-
-
     </main>
-
   );
-
 }
+

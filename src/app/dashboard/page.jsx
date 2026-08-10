@@ -1,38 +1,119 @@
+
 "use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
+  const router = useRouter();
+
   const [blogs, setBlogs] = useState([]);
+  const [user, setUser] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   // ==========================================
-  // Get Blogs From Backend
+  // Check Login + Get User + Get Blogs
   // ==========================================
 
   useEffect(() => {
-    const fetchBlogs = async () => {
+    const fetchDashboard = async () => {
       try {
         setLoading(true);
         setError("");
 
-        const response = await fetch(
-          "http://localhost:5000/api/blogs"
-        );
+        // ==========================================
+        // Get JWT Token
+        // ==========================================
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch blogs");
+        const token = localStorage.getItem("token");
+
+        // ==========================================
+        // Get Logged-in User
+        // ==========================================
+
+        const storedUser = localStorage.getItem("user");
+
+        // ==========================================
+        // Check Login
+        // ==========================================
+
+        if (!token) {
+          router.push("/login");
+          return;
         }
 
+        // ==========================================
+        // Set User Information
+        // ==========================================
+
+        if (storedUser) {
+          try {
+            setUser(JSON.parse(storedUser));
+          } catch (error) {
+            console.error("User data error:", error);
+
+            localStorage.removeItem("user");
+          }
+        }
+
+        // ==========================================
+        // Get User Blogs
+        // ==========================================
+
+        const response = await fetch(
+          "http://localhost:5000/api/blogs",
+          {
+            method: "GET",
+
+            headers: {
+              "Content-Type": "application/json",
+
+              // Send JWT to backend
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
         const data = await response.json();
+
+        // ==========================================
+        // Unauthorized / Expired Token
+        // ==========================================
+
+        if (response.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+
+          router.push("/login");
+
+          return;
+        }
+
+        // ==========================================
+        // Other Backend Errors
+        // ==========================================
+
+        if (!response.ok) {
+          throw new Error(
+            data.message || "Failed to fetch blogs"
+          );
+        }
+
+        // ==========================================
+        // Set User Blogs
+        // ==========================================
 
         if (data.success) {
           setBlogs(data.blogs || []);
         } else {
           setBlogs([]);
-          setError(data.message || "Failed to fetch blogs");
+
+          setError(
+            data.message || "Failed to fetch blogs"
+          );
         }
       } catch (error) {
         console.error("Dashboard Error:", error);
@@ -47,8 +128,19 @@ export default function Dashboard() {
       }
     };
 
-    fetchBlogs();
-  }, []);
+    fetchDashboard();
+  }, [router]);
+
+  // ==========================================
+  // Logout
+  // ==========================================
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    router.push("/login");
+  };
 
   // ==========================================
   // Loading
@@ -113,9 +205,9 @@ export default function Dashboard() {
     >
       <div className="max-w-7xl mx-auto">
 
-        {/* ================================= */}
-        {/* Header */}
-        {/* ================================= */}
+        {/* =================================
+            Header
+        ================================= */}
 
         <div
           className="
@@ -135,7 +227,8 @@ export default function Dashboard() {
                 text-[#2B1B17]
               "
             >
-              Welcome Back 👋
+              Welcome Back
+              {user?.name ? `, ${user.name}` : ""} 👋
             </h1>
 
             <p
@@ -148,32 +241,102 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Create Blog */}
+          <div className="flex gap-3">
 
-          <Link
-            href="/create-blog"
-            className="
-              bg-gradient-to-r
-              from-[#800000]
-              to-[#A52A2A]
-              text-white
-              px-6
-              py-3
-              rounded-xl
-              font-semibold
-              hover:opacity-90
-              hover:shadow-xl
-              transition
-              text-center
-            "
-          >
-            + Create Blog
-          </Link>
+            {/* Create Blog */}
+
+            <Link
+              href="/create-blog"
+              className="
+                bg-gradient-to-r
+                from-[#800000]
+                to-[#A52A2A]
+                text-white
+                px-6
+                py-3
+                rounded-xl
+                font-semibold
+                hover:opacity-90
+                hover:shadow-xl
+                transition
+                text-center
+              "
+            >
+              + Create Blog
+            </Link>
+
+            {/* Logout */}
+
+            <button
+              onClick={handleLogout}
+              className="
+                border
+                border-[#800000]
+                text-[#800000]
+                px-6
+                py-3
+                rounded-xl
+                font-semibold
+                hover:bg-[#800000]
+                hover:text-white
+                transition
+              "
+            >
+              Logout
+            </button>
+
+          </div>
         </div>
 
-        {/* ================================= */}
-        {/* Server Error */}
-        {/* ================================= */}
+        {/* =================================
+            User Profile
+        ================================= */}
+
+        {user && (
+          <div
+            className="
+              mt-8
+              bg-[#FFFDF8]
+              border
+              border-[#E8DCC8]
+              rounded-3xl
+              p-6
+              shadow-lg
+            "
+          >
+            <h2
+              className="
+                text-xl
+                font-bold
+                text-[#2B1B17]
+              "
+            >
+              Your Profile
+            </h2>
+
+            <div className="mt-4">
+
+              <p className="text-[#6B4F45]">
+                <span className="font-semibold">
+                  Name:
+                </span>{" "}
+                {user.name}
+              </p>
+
+              <p className="text-[#6B4F45] mt-2">
+                <span className="font-semibold">
+                  Email:
+                </span>{" "}
+                {user.email}
+              </p>
+
+            </div>
+          </div>
+        )}
+
+        {/* =================================
+            Server Error
+        ================================= */}
 
         {error && (
           <div
@@ -191,9 +354,9 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* ================================= */}
-        {/* Stats */}
-        {/* ================================= */}
+        {/* =================================
+            Stats
+        ================================= */}
 
         <div
           className="
@@ -219,9 +382,9 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* ================================= */}
-        {/* Recent Blogs */}
-        {/* ================================= */}
+        {/* =================================
+            Recent Blogs
+        ================================= */}
 
         <section className="mt-12">
 
@@ -253,17 +416,13 @@ export default function Dashboard() {
             </span>
           </div>
 
-          {/* ================================= */}
-          {/* Blog List */}
-          {/* ================================= */}
+          {/* =================================
+              Blog List
+          ================================= */}
 
           <div className="mt-5 space-y-5">
 
             {blogs.length === 0 ? (
-
-              /* ============================= */
-              /* No Blogs */
-              /* ============================= */
 
               <div
                 className="
@@ -321,10 +480,6 @@ export default function Dashboard() {
 
             ) : (
 
-              /* ============================= */
-              /* Blogs */
-              /* ============================= */
-
               blogs.map((blog) => (
 
                 <div
@@ -353,13 +508,9 @@ export default function Dashboard() {
                     "
                   >
 
-                    {/* ======================= */}
                     {/* Blog Information */}
-                    {/* ======================= */}
 
                     <div className="min-w-0">
-
-                      {/* Blog Title */}
 
                       <Link
                         href={`/blog/${blog._id}`}
@@ -375,8 +526,6 @@ export default function Dashboard() {
                         {blog.title}
                       </Link>
 
-                      {/* Category + Date */}
-
                       <p
                         className="
                           text-sm
@@ -388,8 +537,6 @@ export default function Dashboard() {
                         {" • "}
                         {formatDate(blog.createdAt)}
                       </p>
-
-                      {/* Content Preview */}
 
                       {blog.content && (
                         <p
@@ -406,9 +553,7 @@ export default function Dashboard() {
 
                     </div>
 
-                    {/* ======================= */}
                     {/* Actions */}
-                    {/* ======================= */}
 
                     <div
                       className="
@@ -488,11 +633,7 @@ function Card({ title, value }) {
         transition
       "
     >
-      <h2
-        className="
-          text-[#6B4F45]
-        "
-      >
+      <h2 className="text-[#6B4F45]">
         {title}
       </h2>
 
@@ -525,3 +666,4 @@ function formatDate(date) {
     return "Today";
   }
 }
+
