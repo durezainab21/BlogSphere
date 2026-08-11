@@ -1,57 +1,112 @@
 const dns = require("dns");
 
-// ==============================
+// ==========================================
 // MongoDB DNS Configuration
-// ==============================
+// ==========================================
+
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
+
+// ==========================================
+// Imports
+// ==========================================
 
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+
 const connectDB = require("./config/db");
+
+
+// ==========================================
+// Load Environment Variables
+// ==========================================
+
+dotenv.config();
+
+
+// ==========================================
+// Create Express App
+// ==========================================
 
 const app = express();
 
-// ==============================
-// Environment Variables
-// ==============================
-dotenv.config();
 
-// ==============================
-// Connect MongoDB
-// ==============================
-connectDB();
+// ==========================================
+// Port
+// Render provides PORT automatically
+// ==========================================
 
 const PORT = process.env.PORT || 5000;
 
-// ==============================
+
+// ==========================================
 // Middleware
-// ==============================
-app.use(cors());
+// ==========================================
+
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 
-// ==============================
+
+// ==========================================
+// Connect MongoDB
+// ==========================================
+
+connectDB();
+
+
+// ==========================================
 // Import Routes
-// ==============================
+// ==========================================
+
 const authRoutes = require("./routes/authRoutes");
 const blogRoutes = require("./routes/blogRoutes");
 
-// ==============================
+
+// ==========================================
 // Default Route
-// ==============================
+// ==========================================
+
 app.get("/", (req, res) => {
-  res.send("🚀 Welcome to the BlogSphere Backend API!");
+  res.status(200).json({
+    success: true,
+    message: "🚀 BlogSphere Backend API is running!",
+  });
 });
 
-// ==============================
+
+// ==========================================
 // API Routes
-// ==============================
+// ==========================================
+
 app.use("/api/auth", authRoutes);
+
 app.use("/api/blogs", blogRoutes);
 
-// ==============================
+
+// ==========================================
+// Health Check
+// ==========================================
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "BlogSphere API is healthy ✅",
+  });
+});
+
+
+// ==========================================
 // 404 Route
-// ==============================
+// ==========================================
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -59,9 +114,25 @@ app.use((req, res) => {
   });
 });
 
-// ==============================
+
+// ==========================================
+// Error Handler
+// ==========================================
+
+app.use((error, req, res, next) => {
+  console.error("❌ Server Error:", error);
+
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+  });
+});
+
+
+// ==========================================
 // Start Server
-// ==============================
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+// ==========================================
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 BlogSphere Backend running on port ${PORT}`);
 });
