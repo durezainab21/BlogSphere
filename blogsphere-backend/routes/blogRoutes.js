@@ -1,5 +1,6 @@
 
 const express = require("express");
+
 const router = express.Router();
 
 // ==========================================
@@ -9,54 +10,88 @@ const router = express.Router();
 const {
   createBlog,
   getBlogs,
+  getMyBlogs,
   getBlogById,
   updateBlog,
   deleteBlog,
 } = require("../controllers/blogController");
 
 // ==========================================
-// Import Authentication Middleware
+// Authentication Middleware
 // ==========================================
 
 const authMiddleware = require("../middleware/authMiddleware");
 
 // ==========================================
-// Create Blog
+// GET ALL PUBLISHED BLOGS
+// Public Route
+// GET /api/blogs
+// ==========================================
+
+router.get("/", getBlogs);
+
+// ==========================================
+// GET LOGGED-IN USER'S BLOGS
 // Protected Route
+// GET /api/blogs/my
 // ==========================================
 
-router.post("/", authMiddleware, createBlog);
+router.get(
+  "/my",
+  authMiddleware,
+  getMyBlogs
+);
 
 // ==========================================
-// Get Logged-in User's Blogs
+// GET SINGLE BLOG
+// Public Route
+// GET /api/blogs/:id
+// ==========================================
+
+router.get(
+  "/:id",
+  getBlogById
+);
+
+// ==========================================
+// CREATE BLOG
 // Protected Route
+// POST /api/blogs
 // ==========================================
 
-router.get("/", authMiddleware, getBlogs);
+router.post(
+  "/",
+  authMiddleware,
+  createBlog
+);
 
 // ==========================================
-// Get Single Blog
+// UPDATE BLOG
 // Protected Route
+// PUT /api/blogs/:id
 // ==========================================
 
-router.get("/:id", authMiddleware, getBlogById);
+router.put(
+  "/:id",
+  authMiddleware,
+  updateBlog
+);
 
 // ==========================================
-// Update Blog
+// DELETE BLOG
 // Protected Route
+// DELETE /api/blogs/:id
 // ==========================================
 
-router.put("/:id", authMiddleware, updateBlog);
+router.delete(
+  "/:id",
+  authMiddleware,
+  deleteBlog
+);
 
 // ==========================================
-// Delete Blog
-// Protected Route
-// ==========================================
-
-router.delete("/:id", authMiddleware, deleteBlog);
-
-// ==========================================
-// Export Router
+// EXPORT ROUTER
 // ==========================================
 
 module.exports = router;
+

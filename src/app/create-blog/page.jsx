@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -15,7 +16,6 @@ export default function CreateBlog() {
 
   const [loading, setLoading] = useState(false);
 
-
   // ==========================================
   // Save Blog
   // ==========================================
@@ -24,7 +24,10 @@ export default function CreateBlog() {
     setMessage("");
     setError("");
 
+    // ========================================
     // Validation
+    // ========================================
+
     if (!title.trim()) {
       setError("Blog title is required.");
       return;
@@ -32,6 +35,17 @@ export default function CreateBlog() {
 
     if (!content.trim()) {
       setError("Blog content is required.");
+      return;
+    }
+
+    // ========================================
+    // Get JWT Token
+    // ========================================
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setError("Please login first to create a blog.");
       return;
     }
 
@@ -49,6 +63,7 @@ export default function CreateBlog() {
 
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
 
           body: JSON.stringify({
@@ -60,13 +75,28 @@ export default function CreateBlog() {
         }
       );
 
-
       // ========================================
-      // Get Response
+      // Get Backend Response
       // ========================================
 
       const data = await response.json();
 
+      // ========================================
+      // Handle Unauthorized
+      // ========================================
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        setError("Your session has expired. Please login again.");
+
+        setTimeout(() => {
+          router.push("/login");
+        }, 1500);
+
+        return;
+      }
 
       // ========================================
       // Backend Error
@@ -76,25 +106,18 @@ export default function CreateBlog() {
         setError(
           data.message || "Failed to create blog."
         );
-
         return;
       }
-
 
       // ========================================
       // Success Message
       // ========================================
 
       if (status === "published") {
-        setMessage(
-          "Blog Published Successfully 🚀"
-        );
+        setMessage("Blog Published Successfully 🚀");
       } else {
-        setMessage(
-          "Draft Saved Successfully 📝"
-        );
+        setMessage("Draft Saved Successfully 📝");
       }
-
 
       // ========================================
       // Clear Form
@@ -104,7 +127,6 @@ export default function CreateBlog() {
       setCategory("");
       setContent("");
 
-
       // ========================================
       // Go To Dashboard
       // ========================================
@@ -113,12 +135,8 @@ export default function CreateBlog() {
         router.push("/dashboard");
       }, 1000);
 
-
     } catch (error) {
-      console.error(
-        "Create Blog Error:",
-        error
-      );
+      console.error("Create Blog Error:", error);
 
       setError(
         "Server error. Please make sure the backend is running."
@@ -128,7 +146,6 @@ export default function CreateBlog() {
       setLoading(false);
     }
   };
-
 
   // ==========================================
   // UI
@@ -143,16 +160,11 @@ export default function CreateBlog() {
         py-12
       "
     >
-
       <div className="max-w-5xl mx-auto">
 
-
-        {/* ================================= */}
         {/* Header */}
-        {/* ================================= */}
 
         <div>
-
           <h1
             className="
               text-4xl
@@ -163,7 +175,6 @@ export default function CreateBlog() {
             Create New Blog
           </h1>
 
-
           <p
             className="
               mt-2
@@ -173,13 +184,9 @@ export default function CreateBlog() {
             Share your ideas and inspire the
             BlogSphere community.
           </p>
-
         </div>
 
-
-        {/* ================================= */}
         {/* Form Card */}
-        {/* ================================= */}
 
         <div
           className="
@@ -193,10 +200,7 @@ export default function CreateBlog() {
           "
         >
 
-
-          {/* ================================= */}
-          {/* Title */}
-          {/* ================================= */}
+          {/* Blog Title */}
 
           <label
             className="
@@ -210,13 +214,10 @@ export default function CreateBlog() {
             Blog Title
           </label>
 
-
           <input
             type="text"
             value={title}
-            onChange={(e) =>
-              setTitle(e.target.value)
-            }
+            onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter Blog Title"
             disabled={loading}
             className="
@@ -233,10 +234,7 @@ export default function CreateBlog() {
             "
           />
 
-
-          {/* ================================= */}
           {/* Category */}
-          {/* ================================= */}
 
           <label
             className="
@@ -251,12 +249,9 @@ export default function CreateBlog() {
             Category
           </label>
 
-
           <select
             value={category}
-            onChange={(e) =>
-              setCategory(e.target.value)
-            }
+            onChange={(e) => setCategory(e.target.value)}
             disabled={loading}
             className="
               w-full
@@ -271,7 +266,6 @@ export default function CreateBlog() {
               disabled:opacity-60
             "
           >
-
             <option value="">
               Select Category
             </option>
@@ -295,13 +289,9 @@ export default function CreateBlog() {
             <option value="Career">
               Career
             </option>
-
           </select>
 
-
-          {/* ================================= */}
-          {/* Content */}
-          {/* ================================= */}
+          {/* Blog Content */}
 
           <label
             className="
@@ -316,12 +306,9 @@ export default function CreateBlog() {
             Blog Content
           </label>
 
-
           <textarea
             value={content}
-            onChange={(e) =>
-              setContent(e.target.value)
-            }
+            onChange={(e) => setContent(e.target.value)}
             placeholder="Write your story here..."
             rows={12}
             disabled={loading}
@@ -340,10 +327,7 @@ export default function CreateBlog() {
             "
           />
 
-
-          {/* ================================= */}
           {/* Error */}
-          {/* ================================= */}
 
           {error && (
             <div
@@ -362,10 +346,7 @@ export default function CreateBlog() {
             </div>
           )}
 
-
-          {/* ================================= */}
           {/* Success */}
-          {/* ================================= */}
 
           {message && (
             <div
@@ -384,10 +365,7 @@ export default function CreateBlog() {
             </div>
           )}
 
-
-          {/* ================================= */}
           {/* Buttons */}
-          {/* ================================= */}
 
           <div
             className="
@@ -402,9 +380,7 @@ export default function CreateBlog() {
 
             <button
               disabled={loading}
-              onClick={() =>
-                saveBlog("published")
-              }
+              onClick={() => saveBlog("published")}
               className="
                 bg-gradient-to-r
                 from-[#800000]
@@ -426,14 +402,11 @@ export default function CreateBlog() {
                 : "Publish Blog 🚀"}
             </button>
 
-
             {/* Draft */}
 
             <button
               disabled={loading}
-              onClick={() =>
-                saveBlog("draft")
-              }
+              onClick={() => saveBlog("draft")}
               className="
                 border
                 border-[#800000]
@@ -454,14 +427,11 @@ export default function CreateBlog() {
                 : "Save Draft 📝"}
             </button>
 
-
             {/* Cancel */}
 
             <button
               disabled={loading}
-              onClick={() =>
-                router.push("/dashboard")
-              }
+              onClick={() => router.push("/dashboard")}
               className="
                 border
                 border-[#E8DCC8]
@@ -479,11 +449,8 @@ export default function CreateBlog() {
             </button>
 
           </div>
-
         </div>
-
       </div>
-
     </main>
   );
 }

@@ -10,12 +10,11 @@ export default function Dashboard() {
 
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   // ==========================================
-  // Check Login + Get User + Get Blogs
+  // Fetch Dashboard Data
   // ==========================================
 
   useEffect(() => {
@@ -24,16 +23,7 @@ export default function Dashboard() {
         setLoading(true);
         setError("");
 
-        // ==========================================
-        // Get JWT Token
-        // ==========================================
-
         const token = localStorage.getItem("token");
-
-        // ==========================================
-        // Get Logged-in User
-        // ==========================================
-
         const storedUser = localStorage.getItem("user");
 
         // ==========================================
@@ -46,32 +36,42 @@ export default function Dashboard() {
         }
 
         // ==========================================
-        // Set User Information
+        // Get Logged-in User
         // ==========================================
 
-        if (storedUser) {
-          try {
-            setUser(JSON.parse(storedUser));
-          } catch (error) {
-            console.error("User data error:", error);
+        if (!storedUser) {
+          localStorage.removeItem("token");
+          router.push("/login");
+          return;
+        }
 
-            localStorage.removeItem("user");
-          }
+        let parsedUser;
+
+        try {
+          parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error("User data error:", error);
+
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+
+          router.push("/login");
+          return;
         }
 
         // ==========================================
-        // Get User Blogs
+        // IMPORTANT:
+        // Get ONLY logged-in user's blogs
+        // Backend route = /api/blogs/my
         // ==========================================
 
         const response = await fetch(
-          "http://localhost:5000/api/blogs",
+          "http://localhost:5000/api/blogs/my",
           {
             method: "GET",
-
             headers: {
               "Content-Type": "application/json",
-
-              // Send JWT to backend
               Authorization: `Bearer ${token}`,
             },
           }
@@ -79,8 +79,10 @@ export default function Dashboard() {
 
         const data = await response.json();
 
+        console.log("Dashboard Response:", data);
+
         // ==========================================
-        // Unauthorized / Expired Token
+        // Unauthorized
         // ==========================================
 
         if (response.status === 401) {
@@ -88,38 +90,37 @@ export default function Dashboard() {
           localStorage.removeItem("user");
 
           router.push("/login");
-
           return;
         }
 
         // ==========================================
-        // Other Backend Errors
+        // Backend Error
         // ==========================================
 
         if (!response.ok) {
           throw new Error(
-            data.message || "Failed to fetch blogs"
+            data.message || "Failed to fetch your blogs."
           );
         }
 
         // ==========================================
-        // Set User Blogs
+        // Set ONLY Current User's Blogs
         // ==========================================
 
         if (data.success) {
           setBlogs(data.blogs || []);
         } else {
           setBlogs([]);
-
           setError(
-            data.message || "Failed to fetch blogs"
+            data.message || "Failed to fetch your blogs."
           );
         }
       } catch (error) {
         console.error("Dashboard Error:", error);
 
         setError(
-          "Unable to connect to the BlogSphere server."
+          error.message ||
+            "Unable to connect to the BlogSphere server."
         );
 
         setBlogs([]);
@@ -143,31 +144,17 @@ export default function Dashboard() {
   };
 
   // ==========================================
-  // Loading
+  // Loading Screen
   // ==========================================
 
   if (loading) {
     return (
-      <main
-        className="
-          min-h-screen
-          bg-[#FFF8EE]
-          flex
-          items-center
-          justify-center
-        "
-      >
+      <main className="min-h-screen bg-[#FFF8EE] flex items-center justify-center px-6">
         <div className="text-center">
-          <div className="text-5xl">✍️</div>
+          <div className="text-5xl animate-pulse">✍️</div>
 
-          <p
-            className="
-              mt-4
-              text-[#6B4F45]
-              text-lg
-            "
-          >
-            Loading dashboard...
+          <p className="mt-4 text-[#6B4F45] text-lg">
+            Loading your dashboard...
           </p>
         </div>
       </main>
@@ -175,16 +162,12 @@ export default function Dashboard() {
   }
 
   // ==========================================
-  // Published Blogs
+  // Statistics
   // ==========================================
 
   const publishedBlogs = blogs.filter(
     (blog) => blog.status === "published"
   );
-
-  // ==========================================
-  // Draft Blogs
-  // ==========================================
 
   const draftBlogs = blogs.filter(
     (blog) => blog.status === "draft"
@@ -195,48 +178,22 @@ export default function Dashboard() {
   // ==========================================
 
   return (
-    <main
-      className="
-        min-h-screen
-        bg-[#FFF8EE]
-        px-6
-        py-12
-      "
-    >
+    <main className="min-h-screen bg-[#FFF8EE] px-6 py-12">
       <div className="max-w-7xl mx-auto">
 
-        {/* =================================
+        {/* =====================================
             Header
-        ================================= */}
+        ====================================== */}
 
-        <div
-          className="
-            flex
-            flex-col
-            md:flex-row
-            md:items-center
-            md:justify-between
-            gap-5
-          "
-        >
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+
           <div>
-            <h1
-              className="
-                text-4xl
-                font-bold
-                text-[#2B1B17]
-              "
-            >
+            <h1 className="text-4xl font-bold text-[#2B1B17]">
               Welcome Back
               {user?.name ? `, ${user.name}` : ""} 👋
             </h1>
 
-            <p
-              className="
-                text-[#6B4F45]
-                mt-2
-              "
-            >
+            <p className="text-[#6B4F45] mt-2">
               Manage your blogs, drafts and profile
             </p>
           </div>
@@ -288,9 +245,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* =================================
-            User Profile
-        ================================= */}
+        {/* =====================================
+            Profile
+        ====================================== */}
 
         {user && (
           <div
@@ -304,13 +261,7 @@ export default function Dashboard() {
               shadow-lg
             "
           >
-            <h2
-              className="
-                text-xl
-                font-bold
-                text-[#2B1B17]
-              "
-            >
+            <h2 className="text-xl font-bold text-[#2B1B17]">
               Your Profile
             </h2>
 
@@ -320,23 +271,23 @@ export default function Dashboard() {
                 <span className="font-semibold">
                   Name:
                 </span>{" "}
-                {user.name}
+                {user.name || "Not available"}
               </p>
 
               <p className="text-[#6B4F45] mt-2">
                 <span className="font-semibold">
                   Email:
                 </span>{" "}
-                {user.email}
+                {user.email || "Not available"}
               </p>
 
             </div>
           </div>
         )}
 
-        {/* =================================
-            Server Error
-        ================================= */}
+        {/* =====================================
+            Error
+        ====================================== */}
 
         {error && (
           <div
@@ -354,47 +305,37 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* =================================
-            Stats
-        ================================= */}
+        {/* =====================================
+            Statistics
+        ====================================== */}
 
-        <div
-          className="
-            grid
-            md:grid-cols-3
-            gap-6
-            mt-10
-          "
-        >
+        <div className="grid md:grid-cols-3 gap-6 mt-10">
+
           <Card
-            title="Total Blogs"
+            title="My Total Blogs"
             value={blogs.length}
           />
 
           <Card
-            title="Published"
+            title="My Published"
             value={publishedBlogs.length}
           />
 
           <Card
-            title="Drafts"
+            title="My Drafts"
             value={draftBlogs.length}
           />
+
         </div>
 
-        {/* =================================
+        {/* =====================================
             Recent Blogs
-        ================================= */}
+        ====================================== */}
 
         <section className="mt-12">
 
-          <div
-            className="
-              flex
-              items-center
-              justify-between
-            "
-          >
+          <div className="flex items-center justify-between">
+
             <h2
               className="
                 text-2xl
@@ -402,7 +343,7 @@ export default function Dashboard() {
                 text-[#2B1B17]
               "
             >
-              Recent Blogs
+              My Recent Blogs
             </h2>
 
             <span
@@ -412,13 +353,16 @@ export default function Dashboard() {
               "
             >
               {blogs.length}{" "}
-              {blogs.length === 1 ? "blog" : "blogs"}
+              {blogs.length === 1
+                ? "blog"
+                : "blogs"}
             </span>
+
           </div>
 
-          {/* =================================
+          {/* ===================================
               Blog List
-          ================================= */}
+          ==================================== */}
 
           <div className="mt-5 space-y-5">
 
@@ -456,7 +400,7 @@ export default function Dashboard() {
                     text-[#6B4F45]
                   "
                 >
-                  Start writing your first story.
+                  You haven't created any blogs yet.
                 </p>
 
                 <Link
@@ -501,9 +445,9 @@ export default function Dashboard() {
                     className="
                       flex
                       flex-col
-                      md:flex-row
-                      md:items-center
-                      md:justify-between
+                      lg:flex-row
+                      lg:items-center
+                      lg:justify-between
                       gap-5
                     "
                   >
@@ -512,19 +456,15 @@ export default function Dashboard() {
 
                     <div className="min-w-0">
 
-                      <Link
-                        href={`/blog/${blog._id}`}
+                      <h3
                         className="
-                          block
                           font-semibold
                           text-lg
                           text-[#2B1B17]
-                          hover:text-[#800000]
-                          transition
                         "
                       >
                         {blog.title}
-                      </Link>
+                      </h3>
 
                       <p
                         className="
@@ -588,12 +528,37 @@ export default function Dashboard() {
                       <Link
                         href={`/blog/${blog._id}`}
                         className="
-                          text-[#800000]
+                          bg-[#800000]
+                          text-white
+                          px-5
+                          py-2
+                          rounded-lg
                           font-semibold
-                          hover:underline
+                          hover:bg-[#650000]
+                          transition
                         "
                       >
                         View
+                      </Link>
+
+                      {/* Edit */}
+
+                      <Link
+                        href={`/edit-blog/${blog._id}`}
+                        className="
+                          border
+                          border-[#800000]
+                          text-[#800000]
+                          px-5
+                          py-2
+                          rounded-lg
+                          font-semibold
+                          hover:bg-[#800000]
+                          hover:text-white
+                          transition
+                        "
+                      >
+                        Edit
                       </Link>
 
                     </div>
@@ -607,7 +572,6 @@ export default function Dashboard() {
             )}
 
           </div>
-
         </section>
 
       </div>
