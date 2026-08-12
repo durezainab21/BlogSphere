@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -30,9 +29,9 @@ export default function Login() {
     try {
       setLoading(true);
 
-      // Login API
+      // Login API - Live Vercel Backend
       const response = await fetch(
-        "http://localhost:5000/api/auth/login",
+        "https://blog-sphere-ir82.vercel.app/api/auth/login",
         {
           method: "POST",
 
@@ -92,33 +91,33 @@ export default function Login() {
   return (
     <main
       className="
-      min-h-screen
-      bg-[#FFF8EE]
-      flex
-      items-center
-      justify-center
-      px-6
+        min-h-screen
+        bg-[#FFF8EE]
+        flex
+        items-center
+        justify-center
+        px-6
       "
     >
       <div
         className="
-        w-full
-        max-w-lg
-        bg-[#FFFDF8]
-        border
-        border-[#E8DCC8]
-        rounded-3xl
-        p-10
-        shadow-2xl
+          w-full
+          max-w-lg
+          bg-[#FFFDF8]
+          border
+          border-[#E8DCC8]
+          rounded-3xl
+          p-10
+          shadow-2xl
         "
       >
         {/* Logo */}
         <h1
           className="
-          text-center
-          text-2xl
-          font-bold
-          text-[#2B1B17]
+            text-center
+            text-2xl
+            font-bold
+            text-[#2B1B17]
           "
         >
           Blog
@@ -130,16 +129,16 @@ export default function Login() {
         {/* Icon */}
         <div
           className="
-          mx-auto
-          mt-6
-          w-14
-          h-14
-          rounded-full
-          bg-[#F8EBDD]
-          flex
-          items-center
-          justify-center
-          text-2xl
+            mx-auto
+            mt-6
+            w-14
+            h-14
+            rounded-full
+            bg-[#F8EBDD]
+            flex
+            items-center
+            justify-center
+            text-2xl
           "
         >
           ✍️
@@ -148,11 +147,11 @@ export default function Login() {
         {/* Heading */}
         <h2
           className="
-          mt-5
-          text-3xl
-          font-bold
-          text-center
-          text-[#2B1B17]
+            mt-5
+            text-3xl
+            font-bold
+            text-center
+            text-[#2B1B17]
           "
         >
           Welcome Back
@@ -160,9 +159,9 @@ export default function Login() {
 
         <p
           className="
-          mt-3
-          text-center
-          text-[#6B4F45]
+            mt-3
+            text-center
+            text-[#6B4F45]
           "
         >
           Continue your writing journey
@@ -180,17 +179,17 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email address"
             className="
-            w-full
-            px-5
-            py-4
-            rounded-xl
-            bg-[#FFFDF8]
-            border
-            border-[#E8DCC8]
-            text-[#2B1B17]
-            outline-none
-            focus:border-[#800000]
-            transition
+              w-full
+              px-5
+              py-4
+              rounded-xl
+              bg-[#FFFDF8]
+              border
+              border-[#E8DCC8]
+              text-[#2B1B17]
+              outline-none
+              focus:border-[#800000]
+              transition
             "
           />
 
@@ -201,17 +200,17 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             className="
-            w-full
-            px-5
-            py-4
-            rounded-xl
-            bg-[#FFFDF8]
-            border
-            border-[#E8DCC8]
-            text-[#2B1B17]
-            outline-none
-            focus:border-[#800000]
-            transition
+              w-full
+              px-5
+              py-4
+              rounded-xl
+              bg-[#FFFDF8]
+              border
+              border-[#E8DCC8]
+              text-[#2B1B17]
+              outline-none
+              focus:border-[#800000]
+              transition
             "
           />
 
@@ -233,10 +232,10 @@ export default function Login() {
           <div className="text-right">
             <p
               className="
-              text-sm
-              text-[#800000]
-              cursor-pointer
-              hover:underline
+                text-sm
+                text-[#800000]
+                cursor-pointer
+                hover:underline
               "
             >
               Forgot password?
@@ -248,20 +247,20 @@ export default function Login() {
             type="submit"
             disabled={loading}
             className="
-            w-full
-            bg-gradient-to-r
-            from-[#800000]
-            to-[#A52A2A]
-            text-white
-            py-4
-            rounded-xl
-            font-semibold
-            hover:opacity-90
-            hover:shadow-xl
-            hover:-translate-y-1
-            transition-all
-            disabled:opacity-60
-            disabled:cursor-not-allowed
+              w-full
+              bg-gradient-to-r
+              from-[#800000]
+              to-[#A52A2A]
+              text-white
+              py-4
+              rounded-xl
+              font-semibold
+              hover:opacity-90
+              hover:shadow-xl
+              hover:-translate-y-1
+              transition-all
+              disabled:opacity-60
+              disabled:cursor-not-allowed
             "
           >
             {loading ? "Logging in..." : "Login"}
@@ -271,10 +270,10 @@ export default function Login() {
         {/* Register Link */}
         <p
           className="
-          text-center
-          text-sm
-          mt-7
-          text-[#6B4F45]
+            text-center
+            text-sm
+            mt-7
+            text-[#6B4F45]
           "
         >
           Don't have an account?
@@ -282,11 +281,11 @@ export default function Login() {
           <Link
             href="/register"
             className="
-            ml-1
-            text-[#800000]
-            font-semibold
-            cursor-pointer
-            hover:underline
+              ml-1
+              text-[#800000]
+              font-semibold
+              cursor-pointer
+              hover:underline
             "
           >
             Register
@@ -296,4 +295,3 @@ export default function Login() {
     </main>
   );
 }
-

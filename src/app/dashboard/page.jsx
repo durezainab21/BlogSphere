@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -61,13 +60,11 @@ export default function Dashboard() {
         }
 
         // ==========================================
-        // IMPORTANT:
         // Get ONLY logged-in user's blogs
-        // Backend route = /api/blogs/my
         // ==========================================
 
         const response = await fetch(
-          "http://localhost:5000/api/blogs/my",
+          "https://blog-sphere-ir82.vercel.app/api/blogs/my",
           {
             method: "GET",
             headers: {
@@ -85,7 +82,7 @@ export default function Dashboard() {
         // Unauthorized
         // ==========================================
 
-        if (response.status === 401) {
+        if (response.status === 401 || response.status === 403) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
 
@@ -630,4 +627,3 @@ function formatDate(date) {
     return "Today";
   }
 }
-

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -53,11 +52,11 @@ export default function CreateBlog() {
       setLoading(true);
 
       // ========================================
-      // Send Blog To Backend
+      // Send Blog To Live Backend
       // ========================================
 
       const response = await fetch(
-        "http://localhost:5000/api/blogs",
+        "https://blog-sphere-ir82.vercel.app/api/blogs",
         {
           method: "POST",
 
@@ -103,9 +102,7 @@ export default function CreateBlog() {
       // ========================================
 
       if (!response.ok) {
-        setError(
-          data.message || "Failed to create blog."
-        );
+        setError(data.message || "Failed to create blog.");
         return;
       }
 
@@ -134,14 +131,12 @@ export default function CreateBlog() {
       setTimeout(() => {
         router.push("/dashboard");
       }, 1000);
-
     } catch (error) {
       console.error("Create Blog Error:", error);
 
       setError(
-        "Server error. Please make sure the backend is running."
+        "Server error. Please make sure the backend is available."
       );
-
     } finally {
       setLoading(false);
     }
