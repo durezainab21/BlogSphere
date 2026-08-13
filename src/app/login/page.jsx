@@ -20,48 +20,89 @@ export default function Login() {
     setMessage("");
     setError("");
 
-    if (!email || !password) {
-      setError("Please fill all fields");
+    // ==============================
+    // Validation
+    // ==============================
+
+    if (!email.trim() || !password) {
+      setError("Please fill all fields.");
+      return;
+    }
+
+    // ==============================
+    // Get Backend URL
+    // ==============================
+
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+    console.log("API URL:", API_URL);
+
+    if (!API_URL) {
+      setError(
+        "Backend API URL is not configured. Please check Vercel Environment Variables."
+      );
+
+      console.error("NEXT_PUBLIC_API_URL is missing.");
+
       return;
     }
 
     try {
       setLoading(true);
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-      if (!API_URL) {
-        setError("API URL is not configured.");
-        console.error("NEXT_PUBLIC_API_URL is missing.");
-        return;
-      }
+      // ==============================
+      // Login API Request
+      // ==============================
 
       const response = await fetch(
         `${API_URL}/api/auth/login`,
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
-            email: email.trim(),
-            password,
+            email: email.trim().toLowerCase(),
+            password: password,
           }),
         }
       );
 
+      // ==============================
+      // Read Response
+      // ==============================
+
       const data = await response.json();
 
+      console.log("Login Status:", response.status);
       console.log("Login Response:", data);
 
+      // ==============================
+      // Handle API Error
+      // ==============================
+
       if (!response.ok) {
-        setError(data.message || "Login failed");
+        setError(
+          data.message ||
+            "Login failed. Please check your email and password."
+        );
+
         return;
       }
+
+      // ==============================
+      // Save JWT Token
+      // ==============================
 
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
+
+      // ==============================
+      // Save User Information
+      // ==============================
 
       if (data.user) {
         localStorage.setItem(
@@ -70,7 +111,15 @@ export default function Login() {
         );
       }
 
+      // ==============================
+      // Success
+      // ==============================
+
       setMessage("Login successful 🎉");
+
+      // ==============================
+      // Redirect to Dashboard
+      // ==============================
 
       setTimeout(() => {
         router.push("/dashboard");
@@ -80,7 +129,7 @@ export default function Login() {
       console.error("Login Error:", error);
 
       setError(
-        "Unable to connect to server. Please try again."
+        "Unable to connect to the server. Please check your backend deployment."
       );
     } finally {
       setLoading(false);
@@ -110,6 +159,9 @@ export default function Login() {
           shadow-2xl
         "
       >
+
+        {/* Logo */}
+
         <h1
           className="
             text-center
@@ -123,6 +175,8 @@ export default function Login() {
             Sphere.
           </span>
         </h1>
+
+        {/* Icon */}
 
         <div
           className="
@@ -140,6 +194,8 @@ export default function Login() {
         >
           ✍️
         </div>
+
+        {/* Heading */}
 
         <h2
           className="
@@ -163,16 +219,24 @@ export default function Login() {
           Continue your writing journey
         </p>
 
+        {/* Login Form */}
+
         <form
           onSubmit={handleLogin}
           className="mt-8 space-y-5"
         >
+
+          {/* Email */}
+
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
             placeholder="Email address"
             autoComplete="email"
+            disabled={loading}
             className="
               w-full
               px-5
@@ -185,15 +249,21 @@ export default function Login() {
               outline-none
               focus:border-[#800000]
               transition
+              disabled:opacity-60
             "
           />
+
+          {/* Password */}
 
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
             placeholder="Password"
             autoComplete="current-password"
+            disabled={loading}
             className="
               w-full
               px-5
@@ -206,8 +276,11 @@ export default function Login() {
               outline-none
               focus:border-[#800000]
               transition
+              disabled:opacity-60
             "
           />
+
+          {/* Error */}
 
           {error && (
             <p className="text-red-600 text-center text-sm">
@@ -215,11 +288,15 @@ export default function Login() {
             </p>
           )}
 
+          {/* Success */}
+
           {message && (
             <p className="text-green-600 text-center text-sm">
               {message}
             </p>
           )}
+
+          {/* Forgot Password */}
 
           <div className="text-right">
             <p
@@ -233,6 +310,8 @@ export default function Login() {
               Forgot password?
             </p>
           </div>
+
+          {/* Login Button */}
 
           <button
             type="submit"
@@ -254,9 +333,14 @@ export default function Login() {
               disabled:cursor-not-allowed
             "
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading
+              ? "Logging in..."
+              : "Login"}
           </button>
+
         </form>
+
+        {/* Register Link */}
 
         <p
           className="
@@ -281,6 +365,7 @@ export default function Login() {
             Register
           </Link>
         </p>
+
       </div>
     </main>
   );
