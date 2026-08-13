@@ -21,7 +21,7 @@ export default function ProfilePage() {
         }
 
         const response = await fetch(
-          "http://localhost:5000/api/auth/profile",
+          "https://blog-sphere-tq4b.vercel.app/api/auth/profile",
           {
             method: "GET",
             headers: {

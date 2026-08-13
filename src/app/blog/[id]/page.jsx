@@ -29,7 +29,7 @@ export default function BlogDetails() {
         setError("");
 
         const response = await fetch(
-          `http://localhost:5000/api/blogs/${id}`,
+          `https://blog-sphere-tq4b.vercel.app/api/blogs/${id}`,
           {
             method: "GET",
             headers: {
@@ -99,7 +99,7 @@ export default function BlogDetails() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/blogs/${id}`,
+        `https://blog-sphere-tq4b.vercel.app/api/blogs/${id}`,
         {
           method: "DELETE",
 

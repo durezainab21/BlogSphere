@@ -18,7 +18,7 @@ export default function FeaturedBlogs({ selectedCategory }) {
         setLoading(true);
 
         const response = await fetch(
-          "http://localhost:5000/api/blogs",
+          "https://blog-sphere-tq4b.vercel.app/api/blogs",
           {
             method: "GET",
             cache: "no-store",

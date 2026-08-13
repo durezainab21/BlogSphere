@@ -204,7 +204,7 @@ PORT=5000
 Create the frontend environment file if required:
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_API_URL=https://blog-sphere-tq4b.vercel.app
 ```
 
 > Never upload `.env` files or secret keys to GitHub.
@@ -222,7 +222,7 @@ node server.js
 The backend will run on:
 
 ```text
-http://localhost:5000
+https://blog-sphere-tq4b.vercel.app
 ```
 
 ### Start Frontend
@@ -294,7 +294,7 @@ The application is prepared for deployment using platforms such as:
 Before deployment, update the frontend API URL from:
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_API_URL=https://blog-sphere-tq4b.vercel.app
 ```
 
 to your deployed backend URL.
