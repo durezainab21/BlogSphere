@@ -1,9 +1,8 @@
-
-const dns = require("dns");
-
 // ==========================================
 // MongoDB DNS Configuration
 // ==========================================
+const dns = require("dns");
+
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 // ==========================================
@@ -38,7 +37,7 @@ app.use(
 app.use(express.json());
 
 // ==========================================
-// Connect MongoDB
+// MongoDB Connection
 // ==========================================
 connectDB();
 
@@ -59,12 +58,6 @@ app.get("/", (req, res) => {
 });
 
 // ==========================================
-// API Routes
-// ==========================================
-app.use("/api/auth", authRoutes);
-app.use("/api/blogs", blogRoutes);
-
-// ==========================================
 // Health Check
 // ==========================================
 app.get("/api/health", (req, res) => {
@@ -75,12 +68,19 @@ app.get("/api/health", (req, res) => {
 });
 
 // ==========================================
+// API Routes
+// ==========================================
+app.use("/api/auth", authRoutes);
+app.use("/api/blogs", blogRoutes);
+
+// ==========================================
 // 404 Route
 // ==========================================
 app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: "Route Not Found",
+    path: req.originalUrl,
   });
 });
 
@@ -90,14 +90,13 @@ app.use((req, res) => {
 app.use((error, req, res, next) => {
   console.error("❌ Server Error:", error);
 
-  res.status(500).json({
+  res.status(error.status || 500).json({
     success: false,
-    message: "Internal Server Error",
+    message: error.message || "Internal Server Error",
   });
 });
 
 // ==========================================
-// Export Express App
+// Export App for Vercel
 // ==========================================
 module.exports = app;
-
