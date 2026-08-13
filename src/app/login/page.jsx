@@ -20,7 +20,6 @@ export default function Login() {
     setMessage("");
     setError("");
 
-    // Validation
     if (!email || !password) {
       setError("Please fill all fields");
       return;
@@ -29,18 +28,23 @@ export default function Login() {
     try {
       setLoading(true);
 
-      // Login API - Live Vercel Backend
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+      if (!API_URL) {
+        setError("API URL is not configured.");
+        console.error("NEXT_PUBLIC_API_URL is missing.");
+        return;
+      }
+
       const response = await fetch(
-        "https://blog-sphere-ir82.vercel.app/api/auth/login",
+        `${API_URL}/api/auth/login`,
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json",
           },
-
           body: JSON.stringify({
-            email,
+            email: email.trim(),
             password,
           }),
         }
@@ -48,22 +52,17 @@ export default function Login() {
 
       const data = await response.json();
 
-      // Handle API error
+      console.log("Login Response:", data);
+
       if (!response.ok) {
         setError(data.message || "Login failed");
         return;
       }
 
-      // ===============================
-      // Save JWT Token
-      // ===============================
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
 
-      // ===============================
-      // Save User Information
-      // ===============================
       if (data.user) {
         localStorage.setItem(
           "user",
@@ -73,10 +72,10 @@ export default function Login() {
 
       setMessage("Login successful 🎉");
 
-      // Redirect to Dashboard
       setTimeout(() => {
         router.push("/dashboard");
       }, 800);
+
     } catch (error) {
       console.error("Login Error:", error);
 
@@ -111,7 +110,6 @@ export default function Login() {
           shadow-2xl
         "
       >
-        {/* Logo */}
         <h1
           className="
             text-center
@@ -126,7 +124,6 @@ export default function Login() {
           </span>
         </h1>
 
-        {/* Icon */}
         <div
           className="
             mx-auto
@@ -144,7 +141,6 @@ export default function Login() {
           ✍️
         </div>
 
-        {/* Heading */}
         <h2
           className="
             mt-5
@@ -167,17 +163,16 @@ export default function Login() {
           Continue your writing journey
         </p>
 
-        {/* Login Form */}
         <form
           onSubmit={handleLogin}
           className="mt-8 space-y-5"
         >
-          {/* Email */}
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email address"
+            autoComplete="email"
             className="
               w-full
               px-5
@@ -193,12 +188,12 @@ export default function Login() {
             "
           />
 
-          {/* Password */}
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
+            autoComplete="current-password"
             className="
               w-full
               px-5
@@ -214,21 +209,18 @@ export default function Login() {
             "
           />
 
-          {/* Error */}
           {error && (
             <p className="text-red-600 text-center text-sm">
               {error}
             </p>
           )}
 
-          {/* Success */}
           {message && (
             <p className="text-green-600 text-center text-sm">
               {message}
             </p>
           )}
 
-          {/* Forgot Password */}
           <div className="text-right">
             <p
               className="
@@ -242,7 +234,6 @@ export default function Login() {
             </p>
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
             disabled={loading}
@@ -267,7 +258,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Register Link */}
         <p
           className="
             text-center
