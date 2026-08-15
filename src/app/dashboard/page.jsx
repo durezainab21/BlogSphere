@@ -12,38 +12,30 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ==========================================
-  // Fetch Dashboard Data
-  // ==========================================
-
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
         setLoading(true);
         setError("");
 
+        // Get token and user from localStorage
         const token = localStorage.getItem("token");
         const storedUser = localStorage.getItem("user");
 
-        // ==========================================
-        // Check Login
-        // ==========================================
-
+        // Check login
         if (!token) {
           router.push("/login");
           return;
         }
 
-        // ==========================================
-        // Get Logged-in User
-        // ==========================================
-
+        // Check stored user
         if (!storedUser) {
           localStorage.removeItem("token");
           router.push("/login");
           return;
         }
 
+        // Parse user
         let parsedUser;
 
         try {
@@ -60,11 +52,25 @@ export default function Dashboard() {
         }
 
         // ==========================================
-        // Get ONLY logged-in user's blogs
+        // Backend API URL
+        // ==========================================
+
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+        if (!API_URL) {
+          throw new Error(
+            "Backend API URL is not configured. Please check Vercel Environment Variables."
+          );
+        }
+
+        console.log("API URL:", API_URL);
+
+        // ==========================================
+        // Get logged-in user's blogs
         // ==========================================
 
         const response = await fetch(
-          "https://blog-sphere-ir82.vercel.app/api/blogs/my",
+          `${API_URL}/api/blogs/my`,
           {
             method: "GET",
             headers: {
@@ -101,7 +107,7 @@ export default function Dashboard() {
         }
 
         // ==========================================
-        // Set ONLY Current User's Blogs
+        // Set Blogs
         // ==========================================
 
         if (data.success) {
@@ -178,9 +184,7 @@ export default function Dashboard() {
     <main className="min-h-screen bg-[#FFF8EE] px-6 py-12">
       <div className="max-w-7xl mx-auto">
 
-        {/* =====================================
-            Header
-        ====================================== */}
+        {/* Header */}
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
 
@@ -242,9 +246,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* =====================================
-            Profile
-        ====================================== */}
+        {/* Profile */}
 
         {user && (
           <div
@@ -282,9 +284,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* =====================================
-            Error
-        ====================================== */}
+        {/* Error */}
 
         {error && (
           <div
@@ -302,9 +302,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* =====================================
-            Statistics
-        ====================================== */}
+        {/* Statistics */}
 
         <div className="grid md:grid-cols-3 gap-6 mt-10">
 
@@ -325,9 +323,7 @@ export default function Dashboard() {
 
         </div>
 
-        {/* =====================================
-            Recent Blogs
-        ====================================== */}
+        {/* Recent Blogs */}
 
         <section className="mt-12">
 
@@ -357,9 +353,7 @@ export default function Dashboard() {
 
           </div>
 
-          {/* ===================================
-              Blog List
-          ==================================== */}
+          {/* Blog List */}
 
           <div className="mt-5 space-y-5">
 
