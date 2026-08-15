@@ -30,25 +30,21 @@ export default function Login() {
     }
 
     // ==============================
-    // Get Backend URL
+    // Backend URL
     // ==============================
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-    console.log("API URL:", API_URL);
-
-    if (!API_URL) {
-      setError(
-        "Backend API URL is not configured. Please check Vercel Environment Variables."
-      );
-
-      console.error("NEXT_PUBLIC_API_URL is missing.");
-
-      return;
-    }
+    // Use the working backend directly
+    const API_URL = "https://blog-sphere-tq4b.vercel.app";
 
     try {
       setLoading(true);
+
+      // ==============================
+      // Clear previous login session
+      // ==============================
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
 
       // ==============================
       // Login API Request
@@ -80,7 +76,7 @@ export default function Login() {
       console.log("Login Response:", data);
 
       // ==============================
-      // Handle API Error
+      // API Error
       // ==============================
 
       if (!response.ok) {
@@ -93,23 +89,48 @@ export default function Login() {
       }
 
       // ==============================
-      // Save JWT Token
+      // Check Token
       // ==============================
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
+      if (!data.token) {
+        setError("Login successful, but authentication token was not received.");
+        return;
       }
 
       // ==============================
-      // Save User Information
+      // Check User
       // ==============================
 
-      if (data.user) {
-        localStorage.setItem(
-          "user",
-          JSON.stringify(data.user)
+      if (!data.user) {
+        console.error("Backend did not return user:", data);
+
+        setError(
+          "Login successful, but user information was not received from the server."
         );
+
+        return;
       }
+
+      // ==============================
+      // Save NEW Token
+      // ==============================
+
+      localStorage.setItem("token", data.token);
+
+      // ==============================
+      // Save CURRENT User
+      // ==============================
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
+
+      // Verify saved data
+      console.log(
+        "Logged-in User:",
+        JSON.parse(localStorage.getItem("user"))
+      );
 
       // ==============================
       // Success
@@ -118,12 +139,13 @@ export default function Login() {
       setMessage("Login successful 🎉");
 
       // ==============================
-      // Redirect to Dashboard
+      // Redirect
       // ==============================
 
       setTimeout(() => {
         router.push("/dashboard");
-      }, 800);
+        router.refresh();
+      }, 500);
 
     } catch (error) {
       console.error("Login Error:", error);
@@ -231,9 +253,7 @@ export default function Login() {
           <input
             type="email"
             value={email}
-            onChange={(e) =>
-              setEmail(e.target.value)
-            }
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Email address"
             autoComplete="email"
             disabled={loading}
@@ -258,9 +278,7 @@ export default function Login() {
           <input
             type="password"
             value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             autoComplete="current-password"
             disabled={loading}
@@ -333,9 +351,7 @@ export default function Login() {
               disabled:cursor-not-allowed
             "
           >
-            {loading
-              ? "Logging in..."
-              : "Login"}
+            {loading ? "Logging in..." : "Login"}
           </button>
 
         </form>
