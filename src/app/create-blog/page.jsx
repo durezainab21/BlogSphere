@@ -45,6 +45,11 @@ export default function CreateBlog() {
 
     if (!token) {
       setError("Please login first to create a blog.");
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 1000);
+
       return;
     }
 
@@ -52,11 +57,19 @@ export default function CreateBlog() {
       setLoading(true);
 
       // ========================================
-      // Send Blog To Live Backend
+      // Working Backend URL
+      // ========================================
+
+      const API_URL = "https://blog-sphere-tq4b.vercel.app";
+
+      console.log("Create Blog API:", API_URL);
+
+      // ========================================
+      // Send Blog To Backend
       // ========================================
 
       const response = await fetch(
-        "https://blog-sphere-ir82.vercel.app/api/blogs",
+        `${API_URL}/api/blogs`,
         {
           method: "POST",
 
@@ -75,20 +88,28 @@ export default function CreateBlog() {
       );
 
       // ========================================
-      // Get Backend Response
+      // Read Backend Response
       // ========================================
 
       const data = await response.json();
 
+      console.log("Create Blog Status:", response.status);
+      console.log("Create Blog Response:", data);
+
       // ========================================
-      // Handle Unauthorized
+      // Unauthorized
       // ========================================
 
-      if (response.status === 401 || response.status === 403) {
+      if (
+        response.status === 401 ||
+        response.status === 403
+      ) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
 
-        setError("Your session has expired. Please login again.");
+        setError(
+          "Your session has expired. Please login again."
+        );
 
         setTimeout(() => {
           router.push("/login");
@@ -102,18 +123,25 @@ export default function CreateBlog() {
       // ========================================
 
       if (!response.ok) {
-        setError(data.message || "Failed to create blog.");
+        setError(
+          data.message || "Failed to create blog."
+        );
+
         return;
       }
 
       // ========================================
-      // Success Message
+      // Success
       // ========================================
 
       if (status === "published") {
-        setMessage("Blog Published Successfully 🚀");
+        setMessage(
+          "Blog Published Successfully 🚀"
+        );
       } else {
-        setMessage("Draft Saved Successfully 📝");
+        setMessage(
+          "Draft Saved Successfully 📝"
+        );
       }
 
       // ========================================
@@ -130,7 +158,9 @@ export default function CreateBlog() {
 
       setTimeout(() => {
         router.push("/dashboard");
+        router.refresh();
       }, 1000);
+
     } catch (error) {
       console.error("Create Blog Error:", error);
 
@@ -374,6 +404,7 @@ export default function CreateBlog() {
             {/* Publish */}
 
             <button
+              type="button"
               disabled={loading}
               onClick={() => saveBlog("published")}
               className="
@@ -400,6 +431,7 @@ export default function CreateBlog() {
             {/* Draft */}
 
             <button
+              type="button"
               disabled={loading}
               onClick={() => saveBlog("draft")}
               className="
@@ -425,6 +457,7 @@ export default function CreateBlog() {
             {/* Cancel */}
 
             <button
+              type="button"
               disabled={loading}
               onClick={() => router.push("/dashboard")}
               className="
